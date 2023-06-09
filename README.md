@@ -24,6 +24,31 @@ I can tag less and drink more coffee.
 1. Clone the repo
 2. Execute `make build && make install`
 
+### Commands and Usages
+
+```
+bumpVersion [-major] [-minor] [-patch] [-updateTag]
+
+-The tool will query the local (.) git repo for the most recent tag
+
+-If there are no tags on the local repo at (.), v0.0.0 is assumed
+ as the starting value.
+
+  -major
+        Bump major version
+  -minor
+        Bump minor version
+  -patch
+        Bump patch version
+  -updateTag
+        Update the git tag
+  -v    verbose output
+  -verbose
+        verbose output
+```
+
+
+
 ### Tests
 
 `make test`
