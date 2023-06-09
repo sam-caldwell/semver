@@ -1,17 +1,9 @@
 package semver
 
-// BumpPatch - bump version part
+// BumpPatch - bump version part (with rollover to minor)
 func (ver *SemanticVersion) BumpPatch() error {
-
-	//Get the maximum value of Version number using bitwise math...much faster.
-	maxValue := VersionNumber(2<<(versionNumberSize-1) - 1)
-
-	if ver.patch == maxValue {
-		ver.minor = 0
-		if err := ver.BumpMajor(); err != nil {
-			return err
-		}
+	if err := ver.patch.Bump(); err != nil {
+		return ver.minor.Bump()
 	}
-	ver.patch++
 	return nil
 }
