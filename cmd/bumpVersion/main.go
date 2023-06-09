@@ -16,8 +16,8 @@ func main() {
 
 		flagVerboseShort = "v"
 		flagVerboseLong  = "verbose"
-		errString        = "Error: %s"
-		verString        = "Version: %s"
+		errString        = "Error: %s\n"
+		verString        = "Version: %s\n"
 		helpUpdate       = "Update the git tag"
 		helpVersion      = "Bump %s version"
 	)
@@ -34,6 +34,7 @@ func main() {
 	if err := version.GetMostRecentTag(); err != nil {
 		fmt.Printf(errString, err)
 	}
+
 	if *v || *verbose {
 		fmt.Printf(verString, version.String())
 	}
@@ -43,20 +44,24 @@ func main() {
 			fmt.Printf(errString, err)
 		}
 	}
+
 	if *minor {
 		if err := version.BumpMinor(); err != nil {
 			fmt.Printf(errString, err)
 		}
 	}
+
 	if *patch {
 		if err := version.BumpPatch(); err != nil {
 			fmt.Printf(errString, err)
 		}
 	}
+
 	if *updateTag {
 		if err := version.UpdateTag(); err != nil {
 			fmt.Printf(errString, err)
 		}
 	}
+
 	fmt.Printf(verString, version.String())
 }
