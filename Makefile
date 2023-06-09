@@ -11,7 +11,7 @@ test: lint
 test/actions: test
     # Make sure act is installed (https://github.com/nektos/act)
 	@command -v brew &> /dev/null && brew reinstall act
-	act --use-gitignore
+	act --use-gitignore --fail-fast
 
 
 build: test
@@ -22,3 +22,5 @@ install:
 	mkdir -p ${GOROOT}/bin &> /dev/null || true
 	cp build/bumpVersion ${GOROOT}/bin/bumpVersion
 
+version:
+	go run cmd/bumpVersion/main.go
