@@ -23,4 +23,4 @@ install:
 	cp build/bumpVersion ${GOROOT}/bin/bumpVersion
 
 version:
-	go run cmd/bumpVersion/main.go
+	go run cmd/bumpVersion/main.go -patch -updateTag
