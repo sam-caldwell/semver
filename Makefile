@@ -8,14 +8,23 @@ test: lint
 	@go test -v -count=1 ./...
 
 
+# Make sure act is installed (https://github.com/nektos/act)
 test/actions: test
-    # Make sure act is installed (https://github.com/nektos/act)
-	@command -v brew &> /dev/null && brew reinstall act
-	act --use-gitignore --fail-fast
+	@( \
+		command -v act || { \
+			command -v brew &> /dev/null && brew reinstall act; \
+		} \
+	)
+	act --use-gitignore --
+
+clean:
+	@rm -rf build &>/dev/null || true
+	@mkdir -p build &>/dev/null || true
 
 
-build: test
-	@go build -o build/bumpVersion cmd/bumpVersion/main.go
+build: test clean
+	rm build/bumpVersion &> /dev/null || true
+	go build -o build/bumpVersion cmd/bumpVersion/main.go
 	# Add more commands here.
 
 install:

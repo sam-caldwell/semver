@@ -9,6 +9,8 @@ on:
 jobs:
   semantic-versioning:
     runs-on: ubuntu-latest
+    fail-fast: true
+    needs: go-tests.yaml
 
     steps:
       - name: Checkout repository
