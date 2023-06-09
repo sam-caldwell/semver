@@ -8,6 +8,12 @@ test: lint
 	@go test -v -count=1 ./...
 
 
+test/actions: test
+    # Make sure act is installed (https://github.com/nektos/act)
+	@command -v brew &> /dev/null && brew reinstall act
+	act --use-gitignore
+
+
 build: test
 	@go build -o build/bumpVersion cmd/bumpVersion/main.go
 	# Add more commands here.
