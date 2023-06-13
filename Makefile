@@ -1,15 +1,30 @@
+BUMP_VERSION_BINARY:="bumpVersion"
+CPU_ARCH:=$(shell uname -m)
+OPSYS:=$(shell uname -s | tr A-Z a-z)
+
+
+clean:
+	@echo "$@"
+	@rm -rf build &>/dev/null || true
+	@mkdir -p build &>/dev/null || true
+
+
 lint:
+	@echo "$@"
 	@go install honnef.co/go/tools/cmd/staticcheck@latest
 	@go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
 	@go vet ./...
 	@staticcheck -f stylish ./...
 
+
 test: lint
-	@go test -v -count=1 ./...
+	@echo "$@"
+	go test -v -count=10 ./...
 
 
 # Make sure act is installed (https://github.com/nektos/act)
 test/actions: test
+	@echo "$@"
 	@( \
 		command -v act || { \
 			command -v brew &> /dev/null && brew reinstall act; \
@@ -17,19 +32,25 @@ test/actions: test
 	)
 	act --use-gitignore --
 
-clean:
-	@rm -rf build &>/dev/null || true
-	@mkdir -p build &>/dev/null || true
-
 
 build: test clean
-	rm build/bumpVersion &> /dev/null || true
-	go build -o build/bumpVersion cmd/bumpVersion/main.go
-	# Add more commands here.
+	@echo "$@"
+	@rm build/$(BUMP_VERSION_BINARY) &> /dev/null || true
+	@go build -v -o build/$(BUMP_VERSION_BINARY) cmd/$(BUMP_VERSION_BINARY)/main.go
+	@# Add more commands here.
 
-install:
-	mkdir -p ${GOROOT}/bin &> /dev/null || true
-	cp build/bumpVersion ${GOROOT}/bin/bumpVersion
+
+PACKAGE_NAME:="build/$(OPSYS).$(CPU_ARCH)-$(BUMP_VERSION_BINARY)"
+package:
+	@echo "$@"
+	@tar -cvzf $(PACKAGE_NAME).tar.gz build/$(BUMP_VERSION_BINARY)
+	@rm build/$(BUMP_VERSION_BINARY)
+	@echo "package: $(PACKAGE_NAME).tar.gz"
+
+
+install: build
+	@echo "$@"
+	cp build/$(BUMP_VERSION_BINARY) ${GOROOT}/bin
 
 version:
-	go run cmd/bumpVersion/main.go -patch -updateTag
+	@go run cmd/$(BUMP_VERSION_BINARY)/main.go -patch -updateTag

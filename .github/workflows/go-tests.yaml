@@ -12,19 +12,18 @@ on:
       - main
 
 jobs:
-  test:
-    name: Run Tests
+  simpletest:
+    name: Run a simple test on latest go
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         go-version:
-          - '1.18'
-          - '1.19'
           - '1.20'
-        go-arch: [ 'amd64', 'arm64' ]
-        go-opsys: [ 'linux', 'windows','darwin' ]
-
+        go-arch:
+          - 'amd64'
+        go-opsys:
+          - 'linux'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -37,10 +36,68 @@ jobs:
       - name: Run tests ${{ matrix.go-version }}
         run: make build
 
-      - name: Run tests ${{ matrix.go-version }}
-        run: |
-          make build
-          rm -rf build &> /dev/null || true
-          mkdir -p build &> /dev/null || true
-          GOOS=${{ matrix.go-opsys }} GOARCH=${{ matrix.go-arch }} make build
-          # GOOS=${{ matrix.go-opsys }} GOARCH=${{ matrix.go-arch }} go build -o build/$(uuidgen)main ./...
+#  test:
+#    name: Run Tests Against a Matrix of Environments
+#    strategy:
+#      fail-fast: true
+#      matrix:
+#        opsys:
+#          - 'macos-latest'
+#          - 'ubuntu-latest'
+#
+#        go-version:
+##          - '1.18'
+#          - '1.19'
+#          - '1.20'
+#    runs-on: ${{ matrix.opsys }}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Go
+#        uses: actions/setup-go@v3
+#        with:
+#          go-version: ${{ matrix.go-version }}
+#
+#      - name: Run test and build binaries for ${{ matrix.go-opsys }}:${{ matrix.go-arch }}::${{ matrix.go-version }}
+#        run: |
+#          make build
+#
+#
+#  build:
+#    name: Run build and package
+#    strategy:
+#      fail-fast: true
+#      matrix:
+#        opsys:
+#          - 'macos-latest'
+#          - 'ubuntu-latest'
+#        go-version:
+#          - '1.20'
+#    runs-on: ${{ matrix.opsys }}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Go
+#        uses: actions/setup-go@v3
+#        with:
+#          go-version: ${{ matrix.go-version }}
+#
+#      - name: Set up Git
+#        run: |
+#          git config --local user.email "github.actions@samcaldwell.net"
+#          git config --local user.name "Sam Caldwell (automation)"
+#          git remote set-url origin https://github.com/sam-caldwell/semver.git
+#
+#      - name: Run test and build binaries for ${{ matrix.go-opsys }}:${{ matrix.go-arch }}::${{ matrix.go-version }}
+#        run: |
+#          make build package
+#
+#      - name: bump the version and push the new tag.
+#        run: |
+#          git push origin $(make version | awk '{print $2}')
+#
+#      - name: create release
+#        run: |
+#          echo "todo: create release and upload package"
