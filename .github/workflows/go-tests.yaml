@@ -34,7 +34,7 @@ jobs:
 
       - name: Run test and build binaries for ${{ matrix.go-opsys }}:${{ matrix.go-arch }}::${{ matrix.go-version }}
         run: |
-          make build
+          make build version
 
 #  build:
 #    name: Run build and package
