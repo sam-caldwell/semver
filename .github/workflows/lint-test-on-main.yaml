@@ -8,7 +8,6 @@ on:
   pull_request:
     branches:
       - main
-      - v*
 
 jobs:
   test:
@@ -17,7 +16,6 @@ jobs:
       fail-fast: true
       matrix:
         opsys:
-          - 'macos-latest'
           - 'ubuntu-latest'
         go-version:
           - '1.20'
@@ -44,3 +42,8 @@ jobs:
       - name: build
         run: |
           go build -v -o build/bumpVersion cmd/bumpVersion/main.go
+
+      - name: promote main to the new version
+        run: |
+          go run cmd/bumpVersion/main.go -patch -updateTag
+          git push origin $(shell go run cmd/bumpVersion/main.go)
