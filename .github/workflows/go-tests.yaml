@@ -32,44 +32,20 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Run test and build binaries for ${{ matrix.go-opsys }}:${{ matrix.go-arch }}::${{ matrix.go-version }}
+      - name: lint
         run: |
-          make build version
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
+          go vet ./...
 
-#  build:
-#    name: Run build and package
-#    strategy:
-#      fail-fast: true
-#      matrix:
-#        opsys:
-#          - 'macos-latest'
-#          - 'ubuntu-latest'
-#        go-version:
-#          - '1.20'
-#    runs-on: ${{ matrix.opsys }}
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up Go
-#        uses: actions/setup-go@v3
-#        with:
-#          go-version: ${{ matrix.go-version }}
-#
-#      - name: Set up Git
-#        run: |
-#          git config --local user.email "github.actions@samcaldwell.net"
-#          git config --local user.name "Sam Caldwell (automation)"
-#          git remote set-url origin https://github.com/sam-caldwell/semver.git
-#
-#      - name: Run test and build binaries for ${{ matrix.go-opsys }}:${{ matrix.go-arch }}::${{ matrix.go-version }}
-#        run: |
-#          make build package
-#
-#      - name: bump the version and push the new tag.
-#        run: |
-#          git push origin $(make version | awk '{print $2}')
-#
-#      - name: create release
-#        run: |
-#          echo "todo: create release and upload package"
+      - name: test
+        run: |
+          go test -v -count=1 ./...
+
+      - name: build
+        run: |
+          go build -v -o build/bumpVersion cmd/bumpVersion/main.go
+
+      - name: package
+        run: |
+          tar -cvzf bumpVersion-${{ matrix.opsys }}.tar.gz build/bumpVersion
