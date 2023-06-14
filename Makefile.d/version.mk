@@ -1,4 +1,4 @@
 
 version:
-	@go run cmd/$(BUMP_VERSION_BINARY)/main.go -patch -updateTag
-	git push origin $(go run cmd/$(BUMP_VERSION_BINARY)/main.go)
+	@go run cmd/bumpVersion/main.go -patch -updateTag
+	@git push origin $(shell go run cmd/bumpVersion/main.go)

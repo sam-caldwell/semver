@@ -64,7 +64,7 @@ jobs:
         run: |
           TOKEN=${{ secrets.GITHUB_TOKEN }}
           UPLOAD_URL=${{ steps.create_upload_url.outputs.upload_url }}
-          FILE_PATH=foo.tar.gz
+          FILE_PATH=bumpVersion-${TAG_VERSION}-${{ matrix.opsys }}.tar.gz
 
           curl --data-binary @"$FILE_PATH" -H "Authorization: token $TOKEN" \
             -H "Content-Type: application/octet-stream" "$UPLOAD_URL?name=$FILE_PATH"
