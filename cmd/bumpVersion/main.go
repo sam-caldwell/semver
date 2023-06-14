@@ -62,5 +62,5 @@ func main() {
 			fmt.Printf(errString, err)
 		}
 	}
-	fmt.Printf(version.String())
+	fmt.Printf("%s\n", version.String())
 }
