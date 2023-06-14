@@ -45,5 +45,5 @@ jobs:
 
       - name: promote main to the new version
         run: |
-          ./bumpVersion -patch -updateTag
-          git push origin $(./bumpVersion)
+          ./build/bumpVersion -patch -updateTag
+          git push origin $(./build/bumpVersion)
