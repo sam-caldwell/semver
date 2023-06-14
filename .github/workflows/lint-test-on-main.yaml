@@ -3,7 +3,11 @@ name: Go Tests
 
 on:
   push:
-    tags:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
       - v*
 
 jobs:
@@ -40,7 +44,3 @@ jobs:
       - name: build
         run: |
           go build -v -o build/bumpVersion cmd/bumpVersion/main.go
-
-      - name: package
-        run: |
-          tar -cvzf bumpVersion-${{ matrix.opsys }}.tar.gz build/bumpVersion
