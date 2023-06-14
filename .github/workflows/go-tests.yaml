@@ -1,5 +1,5 @@
 ---
-name: Go Tests
+name: Test, build, package and release
 
 on:
   push:
@@ -41,6 +41,30 @@ jobs:
         run: |
           go build -v -o build/bumpVersion cmd/bumpVersion/main.go
 
+      - name: Get tag version
+        id: extract_tag
+        run: echo "TAG_VERSION=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_ENV
+
       - name: package
         run: |
-          tar -cvzf bumpVersion-${{ matrix.opsys }}.tar.gz build/bumpVersion
+          tar -cvzf bumpVersion-${TAG_VERSION}-${{ matrix.opsys }}.tar.gz build/bumpVersion
+
+      - name: Create Release
+        run: |
+          TOKEN=${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID=bumpVersion-${TAG_VERSION}-${{ matrix.opsys }}
+          UPLOAD_URL=$(curl -s -XPOST -H "Authorization: token $TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/uploads" \
+            | grep "upload_url" | cut -d "\"" -f 4)
+
+          echo "::set-output name=upload_url::$UPLOAD_URL"
+
+      - name: Upload file
+        run: |
+          TOKEN=${{ secrets.GITHUB_TOKEN }}
+          UPLOAD_URL=${{ steps.create_upload_url.outputs.upload_url }}
+          FILE_PATH=foo.tar.gz
+
+          curl --data-binary @"$FILE_PATH" -H "Authorization: token $TOKEN" \
+            -H "Content-Type: application/octet-stream" "$UPLOAD_URL?name=$FILE_PATH"

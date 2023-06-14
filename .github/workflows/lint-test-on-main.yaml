@@ -1,5 +1,5 @@
 ---
-name: Go Tests
+name: Go Tests on Main an Tagged PR for releases
 
 on:
   push:
